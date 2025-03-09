@@ -1,0 +1,98 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7fa;
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #1d8097;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  flex: 1;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+  display: block;
+}
+
+.sidebar ul li a:hover {
+  background-color: #47b6d1;
+}
+
+.logout-btn {
+  margin-top: auto;
+  background-color: #ff5e5e;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  padding: 12px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e03e3e;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  background-color: #f8f9fa;
+  padding: 30px;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.stats-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 220px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.stats-card span {
+  color: #1d8097;
+  font-weight: bold;
+  font-size: 24px;
+}
