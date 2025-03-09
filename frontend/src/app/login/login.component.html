@@ -1,18 +1,14 @@
 <div class="login-container">
+  <div class="left-section">
+    <h1>Welcome back  <br><span>to KariaGo</span></h1>
+    <p>Tap, Rent, Drive!</p>
+  </div>
+
+  <div class="right-section">
     <div class="login-box">
-      <h2>KariaGo Admin Panel</h2>
-  
-      <div class="input-group">
-        <input [(ngModel)]="email" type="email" placeholder="Email">
-      </div>
-  
-      <div class="input-group">
-        <input [(ngModel)]="password" type="password" placeholder="Password">
-      </div>
-  
-      <button class="login-btn" (click)="login()">Login</button>
-  
-      <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
+      <input [(ngModel)]="email" type="email" placeholder="Email" class="input-field" />
+      <input [(ngModel)]="password" type="password" placeholder="Password" class="input-field" />
+      <button class="login-btn" (click)="login()">Sign In</button>
     </div>
   </div>
-  
+</div>
