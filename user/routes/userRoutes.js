@@ -24,8 +24,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// ✅ Get User by Email (Fixing Bad Request Issue)
-router.get('/', async (req, res) => {
+// ✅ Debugging the Email Search for Users
+router.get('/email', async (req, res) => {
     try {
         const { email } = req.query;
         if (!email) {
@@ -33,19 +33,26 @@ router.get('/', async (req, res) => {
             return res.status(400).json({ message: "Email query parameter is required" });
         }
 
-        console.log("🔍 Searching for user with email:", email);
+        console.log(`🔍 Searching for user with email: "${email}"`);
 
-        const user = await User.findOne({ email }).select('+password'); // ✅ Ensure password is included
+        // ✅ Fix: Explicitly define the query to search by email
+        const user = await User.findOne({ email: email }).select('+password');
+
         if (!user) {
+            console.log("❌ User not found.");
             return res.status(404).json({ message: "User not found" });
         }
 
+        console.log("✅ User Found:", user);
         res.status(200).json(user);
     } catch (error) {
         console.error("❌ Error fetching user:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+
+        // ✅ Debugging: Send back the error
+        res.status(500).json({ message: error.message });
     }
 });
+
 
 // ✅ GET USER BY ID (Fixed)
 router.get('/:id', async (req, res) => {

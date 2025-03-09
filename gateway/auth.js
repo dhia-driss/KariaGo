@@ -14,8 +14,7 @@ const JWT_EXPIRATION = process.env.JWT_EXPIRATION || "15m";
 const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || "7d";
 
 const ADMIN_SERVICE = "http://localhost:6000/admins"; // Admin Microservice
-const USER_SERVICE = "http://localhost:6004/users";  
-
+const USER_SERVICE = "http://localhost:6004/users";   // User Microservice
 
 // 🔐 Generate JWT Access Token
 const generateAccessToken = (user) => {
@@ -27,43 +26,17 @@ const generateRefreshToken = (user) => {
     return jwt.sign({ id: user._id, email: user.email }, JWT_REFRESH_SECRET, { expiresIn: JWT_REFRESH_EXPIRATION });
 };
 
-
-// ✅ User Login Route
-router.post('/user/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await authenticateUser(email, password);
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'Strict' });
-        res.json({ accessToken });
-    } catch (error) {
-        res.status(401).json({ message: error.message });
-    }
-});
-
+// ✅ Authenticate User via User Microservice
 async function authenticateUser(email, password) {
     try {
-        console.log("🔍 Checking User Login:", email);
+        console.log(`🔍 Checking User Login: ${email}`);
         
-        // ✅ Debugging: Log the request being sent
-        console.log(`📡 Sending request to: ${USER_SERVICE}?email=${email}`);
-
-        const response = await axios.get(`${USER_SERVICE}?email=${email}`);
+        // ✅ Fix: Use correct `/email` route
+        console.log(`📡 Sending request to: ${USER_SERVICE}/email?email=${email}`);
+        const response = await axios.get(`${USER_SERVICE}/email?email=${email}`);
         console.log("✅ User Microservice Response:", response.data);
 
-        // ✅ Fix: Extract the first user if the response is an array
         let user = response.data;
-        if (Array.isArray(user)) {
-            if (user.length === 0) {
-                console.log("❌ User not found in the array!");
-                throw new Error("User not found");
-            }
-            user = user[0]; // Take the first user from the array
-        }
-
         if (!user || !user.password) {
             console.log("❌ User not found or missing password field.");
             throw new Error("User not found");
@@ -87,39 +60,17 @@ async function authenticateUser(email, password) {
     }
 }
 
-// ✅ Fixed User Login Route
-router.post('/user/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        console.log(`🔍 Attempting User Login: ${email}`);
-
-        const user = await authenticateUser(email, password);
-
-        // Generate JWT tokens
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'Strict' });
-        res.json({ accessToken });
-
-    } catch (error) {
-        console.error("❌ User Login Error:", error.message);
-        res.status(401).json({ message: error.message });
-    }
-});
-
-
-
-
+// ✅ Authenticate Admin via Admin Microservice
 async function authenticateAdmin(email, password) {
     try {
-        console.log("🔍 Checking Admin Login:", email);
-        const response = await axios.get(`${ADMIN_SERVICE}?email=${email}`);
-        console.log("✅ Admin Response:", response.data);
+        console.log(`🔍 Checking Admin Login: ${email}`);
 
-        // Extract the first admin from the array
-        const admin = response.data[0]; 
+        // ✅ Fix: Use correct `/email` route
+        console.log(`📡 Sending request to: ${ADMIN_SERVICE}/email?email=${email}`);
+        const response = await axios.get(`${ADMIN_SERVICE}/email?email=${email}`);
+        console.log("✅ Admin Microservice Response:", response.data);
 
+        let admin = response.data;
         if (!admin || !admin.password) {
             console.log("❌ Admin not found!");
             throw new Error("Admin not found");
@@ -134,6 +85,7 @@ async function authenticateAdmin(email, password) {
             throw new Error("Invalid credentials");
         }
 
+        console.log("✅ Admin authentication successful!");
         return admin;
     } catch (error) {
         console.error("❌ Admin Authentication Error:", error.message);
@@ -141,24 +93,41 @@ async function authenticateAdmin(email, password) {
     }
 }
 
+// ✅ User Login Route (Fixed)
+router.post('/user/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        console.log(`🔍 Attempting User Login: ${email}`);
 
-// ✅ Admin Login Route
+        const user = await authenticateUser(email, password);
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'Strict' });
+        res.json({ accessToken });
+    } catch (error) {
+        console.error("❌ User Login Error:", error.message);
+        res.status(401).json({ message: error.message });
+    }
+});
+
+// ✅ Admin Login Route (Fixed)
 router.post('/admin/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const admin = await authenticateAdmin(email, password);
+        console.log(`🔍 Attempting Admin Login: ${email}`);
 
+        const admin = await authenticateAdmin(email, password);
         const accessToken = generateAccessToken(admin);
         const refreshToken = generateRefreshToken(admin);
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'Strict' });
         res.json({ accessToken });
     } catch (error) {
+        console.error("❌ Admin Login Error:", error.message);
         res.status(401).json({ message: error.message });
     }
 });
-
-
 
 // 🔄 Refresh Token Route
 router.post('/refresh', (req, res) => {
