@@ -12,7 +12,7 @@ interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/auth/admin'; // Update with your backend URL
+  private apiUrl = 'http://localhost:5000/auth'; // Update with your backend URL
 
   constructor(private http: HttpClient) {}
 
