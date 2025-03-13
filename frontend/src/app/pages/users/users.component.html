@@ -1,0 +1,136 @@
+<div class="cars-container">
+    <header class="cars-header">
+        <h2 class="cars-title">User Management</h2>
+        <div class="cars-actions">
+            <button class="add-btn" (click)="toggleAddUser()">➕ Add User</button>
+            <div class="search-container">
+                <input type="text" class="search-input" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search users..." />
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+    </header>
+    
+    <div class="stats-container">
+        <div class="stats-card blue">
+            <div class="stats-info">
+                <p class="stats-title">Total Users</p>
+                <p class="stats-value">{{ totalUsers }}</p>
+            </div>
+            <div class="stats-icon">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Sidebar Widget for Adding User -->
+<div class="user-sidebar-widget" *ngIf="isAdding">
+    <div class="sidebar-content">
+        <div class="widget-header">
+            <h3 class="widget-title">Add New User</h3>
+            <button class="close-btn" (click)="toggleAddUser()">✖</button>
+        </div>
+        <form class="user-form" (ngSubmit)="addUser()">
+            <label>CIN:</label>
+            <input class="widget-input" [(ngModel)]="newUser.cin" name="cin" required />
+
+            <label>Permis:</label>
+            <input class="widget-input" [(ngModel)]="newUser.permis" name="permis" required />
+
+            <label>Phone:</label>
+            <input class="widget-input" [(ngModel)]="newUser.num_phone" name="num_phone" required />
+
+            <label>Email:</label>
+            <input class="widget-input" [(ngModel)]="newUser.email" name="email" type="email" required />
+
+            <label>Blacklisted:</label>
+            <select class="widget-input" [(ngModel)]="newUser.blacklisted" name="blacklisted">
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+            </select>
+
+            <button class="save-btn" type="submit">💾 Save User</button>
+            <button class="cancel-btn" type="button" (click)="toggleAddUser()">✖ Close</button>
+        </form>
+    </div>
+</div>
+
+
+    
+    <div *ngIf="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading users...</p>
+    </div>
+    
+    <div *ngIf="error" class="error-container">
+        <div class="error-icon">⚠️</div>
+        <p class="error-message">{{ error }}</p>
+    </div>
+    
+    <div *ngIf="!loading && !error">
+        <div class="table-container" *ngIf="users.length > 0">
+            <table class="cars-table" style="color: black;">
+                <thead>
+                    <tr>
+                        <th style="color: black;">CIN</th>
+                        <th style="color: black;">Permis</th>
+                        <th style="color: black;">Phone</th>
+                        <th style="color: black;">Email</th>
+                        <th style="color: black;">Blacklisted</th>
+                        <th style="color: black;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users">
+                        <td>{{ user.cin }}</td>
+                        <td>{{ user.permis }}</td>
+                        <td>{{ user.num_phone }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span [ngClass]="{ 'blacklisted': user.blacklisted, 'not-blacklisted': !user.blacklisted }">
+                                {{ user.blacklisted ? '❌ Yes' : '✅ No' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="edit-btn" (click)="selectUser(user)">✏️ Edit</button>
+                            <button class="delete-btn" (click)="deleteUser(user._id)">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="empty-state" *ngIf="users.length === 0">
+            <div class="empty-icon">🚫</div>
+            <p class="empty-message">No users found</p>
+        </div>
+    </div>
+   
+    
+    <!-- Sidebar Widget for Editing User -->
+    <div class="user-edit-sidebar" *ngIf="selectedUser">
+        <div class="sidebar-content">
+            <h3 class="widget-title">Edit User Information</h3>
+            <form class="user-edit-form" (ngSubmit)="updateUser()">
+                <label>CIN:</label>
+                <input class="widget-input" [(ngModel)]="selectedUser.cin" name="cin" required />
+        
+                <label>Permis:</label>
+                <input class="widget-input" [(ngModel)]="selectedUser.permis" name="permis" required />
+        
+                <label>Phone:</label>
+                <input class="widget-input" [(ngModel)]="selectedUser.num_phone" name="num_phone" required />
+        
+                <label>Email:</label>
+                <input class="widget-input" [(ngModel)]="selectedUser.email" name="email" type="email" required />
+        
+                <label>Blacklisted:</label>
+                <select class="widget-input" [(ngModel)]="selectedUser.blacklisted" name="blacklisted">
+                    <option [ngValue]="true">Yes</option>
+                    <option [ngValue]="false">No</option>
+                </select>
+        
+                <button class="save-btn" type="submit">💾 Save Changes</button>
+                <button class="cancel-btn" type="button" (click)="selectedUser=null">✖️ Close</button>
+            </form>
+        </div>
+    </div>
+</div>

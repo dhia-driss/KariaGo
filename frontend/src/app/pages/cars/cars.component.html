@@ -1,0 +1,185 @@
+<div class="cars-container">
+  <header class="cars-header">
+    <h2 class="cars-title">Car Management</h2>
+    <div class="cars-actions">
+      <button class="add-btn" (click)="toggleAddCar()">➕ Add Car</button>
+      <div class="search-container">
+        <input type="text" class="search-input" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search cars..." />
+        <span class="search-icon">🔍</span>
+      </div>
+      <select class="filter-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
+        <option value="all">All Cars</option>
+        <option value="running">Running Only</option>
+        <option value="not-working">Not Working Only</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Stats Section -->
+  <div class="stats-container">
+    <div class="stats-card green">
+      <div class="stats-info">
+        <p class="stats-title">Total Cars</p>
+        <p class="stats-value">{{ totalCars }}</p>
+      </div>
+      <div class="stats-icon">
+        <i class="fas fa-car"></i>
+      </div>
+    </div>
+
+    <div class="stats-card amber">
+      <div class="stats-info">
+        <p class="stats-title">Active Bookings</p>
+        <p class="stats-value">{{ activeBookings }}</p>
+      </div>
+      <div class="stats-icon">
+        <i class="fas fa-calendar"></i>
+      </div>
+    </div>
+
+    <div class="stats-card red">
+      <div class="stats-info">
+        <p class="stats-title">Open Reclamations</p>
+        <p class="stats-value">{{ openReclamations }}</p>
+      </div>
+      <div class="stats-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+    </div>
+  </div>
+  <!-- Add Car Widget -->
+  <div class="add-car-widget" *ngIf="isAdding">
+    <h3>Add New Car</h3>
+    <label><strong>Matricule:</strong></label>
+    <input type="text" [(ngModel)]="newCar.matricule" class="editable-input" />
+
+    <label><strong>Marque:</strong></label>
+    <input type="text" [(ngModel)]="newCar.marque" class="editable-input" />
+
+    <label><strong>Panne:</strong></label>
+    <input type="text" [(ngModel)]="newCar.panne" class="editable-input" />
+
+    <label><strong>Location:</strong></label>
+    <input type="text" [(ngModel)]="newCar.location" class="editable-input" />
+
+    <label><strong>Technical Inspection Date:</strong></label>
+    <input type="date" [(ngModel)]="newCar.visite_technique" class="editable-input" />
+
+    <label><strong>Insurance Date:</strong></label>
+    <input type="date" [(ngModel)]="newCar.date_assurance" class="editable-input" />
+
+    <label><strong>Vignette Date:</strong></label>
+    <input type="date" [(ngModel)]="newCar.vignette" class="editable-input" />
+
+    <label><strong>Status:</strong></label>
+    <select [(ngModel)]="newCar.car_work" class="editable-select">
+      <option [value]="true">✅ Running</option>
+      <option [value]="false">❌ Not Working</option>
+    </select>
+
+    <label><strong>Last Oil Change:</strong></label>
+    <input type="date" [(ngModel)]="newCar.diagnostique_vidange!.vidange3" class="editable-input" />
+    
+    <button class="save-btn" (click)="addCar()">💾 Save</button>
+    <button class="cancel-btn" (click)="toggleAddCar()">❌ Cancel</button>
+  </div>
+
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading cars...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <p class="error-message">{{ error }}</p>
+  </div>
+
+  <!-- Car Table -->
+  <div class="table-container" *ngIf="filteredCars.length > 0">
+    <table class="cars-table">
+      <thead>
+        <tr>
+          <th style="color: black;">Matricule</th>
+<th style="color: black;">Marque</th>
+<th style="color: black;">Status</th>
+<th style="color: black;">Location</th>
+<th style="color: black;">Last Oil Change</th>
+<th style="color: black;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let car of filteredCars" (click)="selectCar(car)" class="clickable-row">
+          <td>{{ car.matricule }}</td>
+          <td>{{ car.marque }}</td>
+          <td>
+            <span class="status-badge" [class.status-running]="car.car_work" [class.status-not-working]="!car.car_work">
+              {{ car.car_work ? 'Running' : 'Not Working' }}
+            </span>
+          </td>
+          <td>
+            <span class="location-icon">📍</span>
+            {{ car.location }}
+          </td>
+          <td>{{ car.diagnostique_vidange?.vidange3 || 'N/A' }}</td>
+          <td>
+            <button class="view-btn" (click)="selectCar(car)">👁 View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredCars.length === 0 && !loading">
+    <div class="empty-icon">🚫</div>
+    <p class="empty-message">No cars found</p>
+  </div>
+
+  
+   <!-- Car Details Widget with View/Edit Mode -->
+  <div class="car-details-widget" *ngIf="selectedCar">
+    <h3>Car Details</h3>
+    
+    <div *ngIf="!isEditing">
+      <p><strong>Matricule:</strong> {{ selectedCar.matricule }}</p>
+      <p><strong>Marque:</strong> {{ selectedCar.marque }}</p>
+      <p><strong>Status:</strong> {{ selectedCar.car_work ? '✅ Running' : '❌ Not Working' }}</p>
+      <p><strong>Location:</strong> {{ selectedCar.location }}</p>
+      <p><strong>Last Oil Change:</strong> {{ selectedCar.diagnostique_vidange?.vidange3 || 'N/A' }}</p>
+      <p><strong>Current Booking Ends:</strong> {{ selectedCarBooking?.date_hour_expire || 'No Active Booking' }}</p>
+      <button class="modify-btn" (click)="toggleEditMode()">✏ Modify</button>
+    </div>
+
+    <div *ngIf="isEditing">
+      <label><strong>Matricule:</strong></label>
+      <input type="text" [(ngModel)]="selectedCar.matricule" class="editable-input" />
+
+      <label><strong>Marque:</strong></label>
+      <input type="text" [(ngModel)]="selectedCar.marque" class="editable-input" />
+
+      <label><strong>Status:</strong></label>
+      <select [(ngModel)]="selectedCar.car_work" class="editable-select">
+        <option [value]="true">✅ Running</option>
+        <option [value]="false">❌ Not Working</option>
+      </select>
+
+      <label><strong>Location:</strong></label>
+      <input type="text" [(ngModel)]="selectedCar.location" class="editable-input" />
+
+      <label><strong>Last Oil Change:</strong></label>
+      <input type="date" [(ngModel)]="selectedCar.diagnostique_vidange!.vidange3" class="editable-input" />
+      
+      <button class="save-btn" (click)="saveCarChanges()">💾 Save</button>
+      <button class="cancel-btn" (click)="toggleEditMode()">❌ Cancel</button>
+    </div>
+
+    <button class="delete-btn" (click)="removeCar()">🗑 Remove</button>
+    <button class="close-btn" (click)="closeCarDetails()">❌ Close</button>
+  </div>
+</div>
+
+
+  

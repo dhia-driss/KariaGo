@@ -1,0 +1,11 @@
+/* Ensure the map takes up the full viewport */
+.map-container {
+    width: 100%;
+    height: 90vh; /* Adjust height as needed */
+}
+
+#map {
+    width: 100%;
+    height: 100%; /* Ensure the map div takes full height */
+    border: 1px solid #ccc; /* Optional border */
+}

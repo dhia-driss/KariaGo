@@ -1,0 +1,120 @@
+<div class="cars-container">
+    <header class="cars-header">
+        <h2 class="cars-title">Booking Management</h2>
+        <div class="cars-actions">
+            <button class="add-booking-btn" (click)="openNewBooking()">➕ Add Booking</button>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search bookings..." />
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stats-card blue">
+            <div class="stats-info">
+                <p class="stats-title">Total Users</p>
+                <p class="stats-value">{{ totalUsers }}</p>
+            </div>
+            <div class="stats-icon">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+
+        <div class="stats-card green">
+            <div class="stats-info">
+                <p class="stats-title">Total Cars</p>
+                <p class="stats-value">{{ totalCars }}</p>
+            </div>
+            <div class="stats-icon">
+                <i class="fas fa-car"></i>
+            </div>
+        </div>
+
+        <div class="stats-card amber">
+            <div class="stats-info">
+                <p class="stats-title">Active Bookings</p>
+                <p class="stats-value">{{ activeBookings }}</p>
+            </div>
+            <div class="stats-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+        </div>
+
+        <div class="stats-card red">
+            <div class="stats-info">
+                <p class="stats-title">Open Reclamations</p>
+                <p class="stats-value">{{ openReclamations }}</p>
+            </div>
+            <div class="stats-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading bookings...</p>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+        <div class="error-icon">⚠️</div>
+        <p class="error-message">{{ error }}</p>
+    </div>
+
+    <div *ngIf="!loading && !error">
+        <div class="table-container" *ngIf="bookings.length > 0">
+            <table class="cars-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Car ID</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let booking of bookings">
+                        <td>{{ booking.id_user }}</td>
+                        <td>{{ booking.id_car }}</td>
+                        <td>{{ booking.date_hour_booking | date:'medium' }}</td>
+                        <td>{{ booking.date_hour_expire | date:'medium' }}</td>
+                        <td>
+                            <span [ngClass]="{ 'paid': booking.paiement > 0, 'unpaid': booking.paiement === 0 }">
+                                {{ booking.paiement > 0 ? '$' + booking.paiement : 'Unpaid' }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="view-btn" (click)="viewBooking(booking)">👁️ View</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- New Booking Form -->
+    <div *ngIf="newBookingOpen" class="new-booking-widget">
+        <button class="close-btn" (click)="closeNewBooking()">❌ Close</button>
+        <h3>Add New Booking</h3>
+
+        <label>User ID:</label>
+        <input type="text" [(ngModel)]="newBooking.id_user" placeholder="Enter User ID"/>
+
+        <label>Car ID:</label>
+        <input type="text" [(ngModel)]="newBooking.id_car" placeholder="Enter Car ID"/>
+
+        <label>Start Date:</label>
+        <input type="datetime-local" [(ngModel)]="newBooking.date_hour_booking" />
+
+        <label>End Date:</label>
+        <input type="datetime-local" [(ngModel)]="newBooking.date_hour_expire" />
+
+        <label>Payment:</label>
+        <input type="number" [(ngModel)]="newBooking.paiement" placeholder="Enter Payment"/>
+
+        <button class="save-btn" (click)="saveNewBooking()">💾 Save Booking</button>
+    </div>
+</div>
