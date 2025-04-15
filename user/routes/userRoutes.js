@@ -2,6 +2,33 @@ const express = require('express');
 const mongoose = require('mongoose');
 const User = require('../models/user');
 const router = express.Router();
+const axios = require('axios');
+
+router.post('/analyse-driver', async (req, res) => {
+    try {
+      const drivingData = req.body;
+      console.log("📥 Données reçues :", drivingData);
+  
+      const response = await axios.post('http://localhost:5001/predict', drivingData);
+  
+      console.log("🤖 Réponse IA :", response.data);
+      res.json({ behavior: response.data.result });
+  
+    } catch (err) {
+        console.error("❌ Erreur IA :", err.message);
+        if (err.response) {
+          console.error("📥 Erreur réponse Flask :", err.response.data);
+          console.error("📋 Code HTTP :", err.response.status);
+        } else if (err.request) {
+          console.error("📡 Aucune réponse reçue depuis Flask");
+        } else {
+          console.error("❗ Autre erreur :", err);
+        }
+        res.status(500).json({ message: "Erreur d’analyse IA" });
+      }
+    
+  });
+  
 
 // ✅ CREATE USER
 router.post('/', async (req, res) => {

@@ -3,6 +3,19 @@ require('dotenv').config(); // Load environment variables
 
 const { spawn } = require('child_process');
 const path = require('path');
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+const userRoutes = require('./user/routes/userRoutes');
+
+app.use('/users', userRoutes);
+
+app.listen(5001, () => {
+  console.log("✅ Microservice USER lancé sur le port 5001");
+});
+
 
 // Start the API Gateway (Main Entry Point)
 console.log("🚀 Starting API Gateway...");

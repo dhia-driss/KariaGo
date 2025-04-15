@@ -1,1 +1,6 @@
-node_modules
+// filepath: c:\Users\Khalil\Documents\kariaGo\kariaGo\.gitignore
+// ...existing code...
+node_modules/
+// ...existing code...// filepath: c:\Users\Khalil\Documents\kariaGo\kariaGo\.gitignore
+node_modules/
+npm start
