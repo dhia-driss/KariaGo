@@ -1,0 +1,114 @@
+<div class="cars-container">
+    <header class="cars-header">
+      <h2 class="cars-title">Reclamation Management</h2>
+      <div class="cars-actions">
+        <button class="add-reclamation-btn" (click)="openNewReclamation()">➕ Add Reclamation</button>
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="Search reclamations..." />
+          <span class="search-icon">🔍</span>
+        </div>
+      </div>
+    </header>
+  
+    <div class="stats-container">
+      <div class="stats-card red">
+        <div class="stats-info">
+          <p class="stats-title">Open Reclamations</p>
+          <p class="stats-value">{{ openReclamations }}</p>
+        </div>
+        <div class="stats-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+      </div>
+    </div>
+  
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading reclamations...</p>
+    </div>
+  
+    <div *ngIf="error" class="error-container">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">{{ error }}</p>
+    </div>
+  
+    <div *ngIf="!loading && !error">
+      <div class="table-container" *ngIf="reclamations.length > 0">
+        <table class="cars-table">
+          <thead>
+            <tr>
+              <th style="color: black;">User Name</th>
+              <th style="color: black;">Message</th>
+              <th style="color: black;">Date Created</th>
+              <th style="color: black;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reclamation of reclamations">
+              <td>{{ getFullName(reclamation.id_user) }}</td>
+              <td>{{ reclamation.message }}</td>
+              <td>{{ reclamation.date_created | date:'medium' }}</td>
+              <td>
+                <button class="view-btn" (click)="viewReclamation(reclamation)">👁️ View</button>
+                <button class="delete-btn" (click)="deleteReclamation(reclamation._id)">🗑️ Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="empty-state" *ngIf="reclamations.length === 0">
+        <div class="empty-icon">🚫</div>
+        <p class="empty-message">No reclamations found</p>
+      </div>
+    </div>
+  
+    <!-- View Reclamation Widget -->
+    <div *ngIf="selectedReclamation" class="reclamation-details">
+      <button class="close-btn" (click)="closeReclamationDetails()">❌ Close</button>
+      <h3>Reclamation Details</h3>
+  
+      <div *ngIf="!editMode">
+        <p><strong>User Name:</strong> {{ getFullName(selectedReclamation.id_user) }}</p>
+        <p><strong>Message:</strong> {{ selectedReclamation.message }}</p>
+        <p><strong>Date Created:</strong> {{ selectedReclamation.date_created | date:'medium' }}</p>
+        <button class="edit-btn" (click)="editMode = true">✏️ Edit</button>
+      </div>
+  
+      <div *ngIf="editMode">
+        <label>User Name:</label>
+        <input type="text" [value]="getFullName(editableReclamation?.id_user)" disabled />
+  
+        <label>Message:</label>
+        <textarea [(ngModel)]="editableReclamation!.message"></textarea>
+  
+        <button class="save-btn" (click)="saveReclamationChanges()">💾 Save Changes</button>
+        <button class="cancel-btn" (click)="editMode = false">❌ Cancel</button>
+      </div>
+    </div>
+  
+    <!-- New Reclamation Form -->
+    <div *ngIf="newReclamationOpen" class="new-reclamation-widget">
+      <button class="close-btn" (click)="closeNewReclamation()">❌ Close</button>
+      <h3>Add New Reclamation</h3>
+  
+      <label>User Name:</label>
+      <input
+        type="text"
+        [(ngModel)]="selectedUserName"
+        (input)="onUserSearch(selectedUserName)"
+        placeholder="Type user name..."
+      />
+      <ul *ngIf="filteredUsers.length > 0" class="autocomplete-list">
+        <li *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+          {{ user.fullName }}
+        </li>
+      </ul>
+  
+      <label>Message:</label>
+      <textarea [(ngModel)]="newReclamation.message" placeholder="Enter Message"></textarea>
+  
+      <button class="save-btn" (click)="saveNewReclamation()">💾 Save Reclamation</button>
+    </div>
+  </div>
+  

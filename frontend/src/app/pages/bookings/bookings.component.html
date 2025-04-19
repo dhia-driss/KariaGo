@@ -1,0 +1,214 @@
+<div class="cars-container" (click)="userSuggestions = []; carSuggestions = []">
+  <header class="cars-header">
+    <h2 class="cars-title">Booking Management</h2>
+    <div class="cars-actions">
+      <button class="add-booking-btn" (click)="openNewBooking()">➕ Add Booking</button>
+      <div class="search-container">
+        <input type="text" class="search-input" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Search bookings..." />
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats-container">
+    <!-- Stats Cards -->
+    <div class="stats-card blue">
+      <div class="stats-info">
+        <p class="stats-title">Total Users</p>
+        <p class="stats-value">{{ totalUsers }}</p>
+      </div>
+    </div>
+    <div class="stats-card green">
+      <div class="stats-info">
+        <p class="stats-title">Total Cars</p>
+        <p class="stats-value">{{ totalCars }}</p>
+      </div>
+    </div>
+    <div class="stats-card amber">
+      <div class="stats-info">
+        <p class="stats-title">Active Bookings</p>
+        <p class="stats-value">{{ activeBookings }}</p>
+      </div>
+    </div>
+    <div class="stats-card red">
+      <div class="stats-info">
+        <p class="stats-title">Open Reclamations</p>
+        <p class="stats-value">{{ openReclamations }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading bookings...</p>
+  </div>
+
+  <div *ngIf="error" class="error-container">
+    <div class="error-icon">⚠️</div>
+    <p class="error-message">{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <div class="table-container" *ngIf="filteredBookings.length > 0">
+      <table class="cars-table">
+        <thead>
+          <tr>
+            <th style="color: black;">User</th>
+            <th style="color: black;">Car</th>
+            <th style="color: black;">Start Date</th>
+            <th style="color: black;">End Date</th>
+            <th style="color: black;">Payment</th>
+            <th style="color: black;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let booking of filteredBookings">
+            <td>{{ getUserName(booking.id_user) }}</td>
+            <td>{{ getCarMatricule(booking.id_car) }}</td>
+            <td>{{ booking.date_hour_booking | date:'medium' }}</td>
+            <td>{{ booking.date_hour_expire | date:'medium' }}</td>
+            <td>
+              <span [ngClass]="{ 'paid': booking.paiement > 0, 'unpaid': booking.paiement === 0 }">
+                {{ booking.paiement > 0 ? '$' + booking.paiement : 'Unpaid' }}
+              </span>
+            </td>
+            <td><button class="view-btn" (click)="viewBooking(booking)">👁 View</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredBookings.length === 0">
+      <div class="empty-icon">🚫</div>
+      <p class="empty-message">No bookings found</p>
+    </div>
+  </div>
+
+  <!-- Add New Booking -->
+  <div *ngIf="newBookingOpen" class="new-booking-widget" (click)="$event.stopPropagation()">
+    <h3>Add New Booking</h3>
+    <button class="close-btn" (click)="closeNewBooking()">❌ Close</button>
+
+    <label>User:</label>
+    <input type="text" [(ngModel)]="selectedUserName" (input)="onUserSearch(selectedUserName, 'new')" placeholder="Search User..." />
+    <ul *ngIf="userSuggestions.length > 0" class="autocomplete-list">
+      <li *ngFor="let user of userSuggestions" (click)="selectUser(user, 'new'); $event.stopPropagation()">{{ user.fullName }}</li>
+    </ul>
+
+    <label>Car:</label>
+    <input type="text" [(ngModel)]="selectedCarName" (input)="onCarSearch(selectedCarName, 'new')" placeholder="Search Car..." />
+    <ul *ngIf="carSuggestions.length > 0" class="autocomplete-list">
+      <li *ngFor="let car of carSuggestions" (click)="selectCar(car, 'new'); $event.stopPropagation()">{{ car.matricule }}</li>
+    </ul>
+
+    <label>Start Date:</label>
+    <input type="datetime-local" [(ngModel)]="newBooking.date_hour_booking" />
+
+    <label>End Date:</label>
+    <input type="datetime-local" [(ngModel)]="newBooking.date_hour_expire" />
+
+    <label>Payment:</label>
+    <input type="number" [(ngModel)]="newBooking.paiement" placeholder="Enter Payment" />
+
+    <label>Status:</label>
+    <select [(ngModel)]="newBooking.status">
+      <option [value]="true">✅ Active</option>
+      <option [value]="false">❌ Inactive</option>
+    </select>
+
+    <label>Current Key:</label>
+    <input type="text" [(ngModel)]="newBooking.current_Key_car" placeholder="Enter Current Key" />
+
+    <label>Contract (PDF):</label>
+    <input type="file" accept="application/pdf" (change)="onContractUpload($event, 'new')" />
+    <a *ngIf="newBooking.contrat" [href]="newBooking.contrat" download>
+      <img src="assets/pdf-icon.png" alt="Download PDF" style="width: 60px; cursor: pointer;" />
+    </a>
+
+    <label>Estimated Location:</label>
+    <input type="text" [(ngModel)]="newBooking.estimated_Location" placeholder="Enter Estimated Location" />
+
+    <label>Location Before Renting:</label>
+    <input type="text" [(ngModel)]="newBooking.location_Before_Renting" placeholder="Enter Location Before Renting" />
+
+    <label>Location After Renting:</label>
+    <input type="text" [(ngModel)]="newBooking.location_After_Renting" placeholder="Enter Location After Renting" />
+
+    <label>Image:</label>
+    <input type="file" (change)="onImageUpload($event, 'new')" />
+    <img *ngIf="newBooking.image" [src]="newBooking.image" alt="Booking Image" class="user-preview-image" />
+
+    <button class="save-btn" (click)="saveNewBooking()">💾 Save Booking</button>
+  </div>
+
+  <!-- Booking Details Sidebar -->
+  <div class="booking-details" *ngIf="selectedBooking" (click)="$event.stopPropagation()">
+    <h3>Booking Details</h3>
+
+    <div *ngIf="!editMode">
+      <p><strong>User:</strong> {{ getUserName(selectedBooking.id_user) }}</p>
+      <p><strong>Car:</strong> {{ getCarMatricule(selectedBooking.id_car) }}</p>
+      <p><strong>Start Date:</strong> {{ selectedBooking.date_hour_booking | date:'medium' }}</p>
+      <p><strong>End Date:</strong> {{ selectedBooking.date_hour_expire | date:'medium' }}</p>
+      <p><strong>Payment:</strong> {{ selectedBooking.paiement > 0 ? ('$' + selectedBooking.paiement) : 'Unpaid' }}</p>
+      <p><strong>Status:</strong> {{ selectedBooking.status ? '✅ Active' : '❌ Inactive' }}</p>
+      <p><strong>Current Key:</strong> {{ selectedBooking.current_Key_car || 'N/A' }}</p>
+      <p><strong>Contract:</strong>
+        <a *ngIf="selectedBooking.contrat" [href]="selectedBooking.contrat" download>
+          <img src="assets/pdf-icon.png" alt="Download PDF" style="width: 60px; cursor: pointer;" />
+        </a>
+        <span *ngIf="!selectedBooking.contrat">N/A</span>
+      </p>
+      <p><strong>Estimated Location:</strong> {{ selectedBooking.estimated_Location || 'N/A' }}</p>
+      <p><strong>Location Before:</strong> {{ selectedBooking.location_Before_Renting || 'N/A' }}</p>
+      <p><strong>Location After:</strong> {{ selectedBooking.location_After_Renting || 'N/A' }}</p>
+      <p *ngIf="selectedBooking.image"><strong>Image:</strong><br><img [src]="selectedBooking.image" alt="Booking Image" class="user-preview-image" /></p>
+      <button class="modify-btn" (click)="enableEditMode()">✏️ Edit</button>
+      <button class="delete-btn" (click)="deleteBooking()">🗑 Delete</button>
+    </div>
+
+    <form *ngIf="editMode" class="car-form" (ngSubmit)="saveBookingChanges()">
+      <label>Start Date:</label>
+      <input type="datetime-local" [(ngModel)]="selectedBooking.date_hour_booking" name="edit_date_start" />
+
+      <label>End Date:</label>
+      <input type="datetime-local" [(ngModel)]="selectedBooking.date_hour_expire" name="edit_date_end" />
+
+      <label>Payment:</label>
+      <input type="number" [(ngModel)]="selectedBooking.paiement" name="edit_paiement" />
+
+      <label>Status:</label>
+      <select [(ngModel)]="selectedBooking.status" name="edit_status">
+        <option [value]="true">✅ Active</option>
+        <option [value]="false">❌ Inactive</option>
+      </select>
+
+      <label>Current Key:</label>
+      <input type="text" [(ngModel)]="selectedBooking.current_Key_car" name="edit_key" />
+
+      <label>Contract (PDF):</label>
+      <input type="file" accept="application/pdf" (change)="onContractUpload($event, 'edit')" name="edit_pdf_file" />
+      <a *ngIf="selectedBooking.contrat" [href]="selectedBooking.contrat" download>
+        <img src="assets/pdf-icon.png" alt="Download PDF" style="width: 60px; cursor: pointer;" />
+      </a>
+
+      <label>Estimated Location:</label>
+      <input type="text" [(ngModel)]="selectedBooking.estimated_Location" name="edit_estimated_location" />
+
+      <label>Location Before Renting:</label>
+      <input type="text" [(ngModel)]="selectedBooking.location_Before_Renting" name="edit_before_location" />
+
+      <label>Location After Renting:</label>
+      <input type="text" [(ngModel)]="selectedBooking.location_After_Renting" name="edit_after_location" />
+
+      <label>Image:</label>
+      <input type="file" (change)="onImageUpload($event, 'edit')" name="edit_image_file" />
+      <img *ngIf="selectedBooking.image" [src]="selectedBooking.image" alt="Booking Image" class="user-preview-image" />
+
+      <button class="save-btn" type="submit">💾 Save</button>
+      <button class="cancel-btn" type="button" (click)="editMode = false">❌ Cancel</button>
+    </form>
+
+    <button class="close-btn" (click)="closeBookingDetails()">❌ Close</button>
+  </div>
+</div>
