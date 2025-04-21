@@ -8,15 +8,17 @@
     *ngFor="let m of markers"
     [position]="m.position"
     [label]="m.label"
-    (mapClick)="selectCar(m)">
+    [options]="m.options"
+    (mapClick)="selectCar(m, infoWindowRef)">
   </map-marker>
 
-  <map-info-window [position]="selectedPosition">
+  <map-info-window #infoWindowRef="mapInfoWindow" [position]="selectedPosition">
     <div *ngIf="selectedCar">
       <strong>Matricule:</strong> {{ selectedCar.matricule }}<br>
       <strong>Marque:</strong> {{ selectedCar.marque }}<br>
-      <strong>Panne:</strong> {{ selectedCar.panne }}<br>
-      <strong>Location:</strong> {{ selectedCar.location }}
+      <strong>Client:</strong> {{ selectedCar.fullName || '—' }}<br>
+      <strong>Début location:</strong> {{ selectedCar.date_hour_booking | date:'short' }}<br>
+      <strong>Fin location:</strong> {{ selectedCar.date_hour_expire | date:'short' }}
     </div>
   </map-info-window>
 
