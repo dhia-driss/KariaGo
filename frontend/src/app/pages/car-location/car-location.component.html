@@ -3,10 +3,21 @@
   width="100%"
   [center]="center"
   [zoom]="zoom">
+
   <map-marker
     *ngFor="let m of markers"
     [position]="m.position"
     [label]="m.label"
-    [title]="m.title">
+    (mapClick)="selectCar(m)">
   </map-marker>
+
+  <map-info-window [position]="selectedPosition">
+    <div *ngIf="selectedCar">
+      <strong>Matricule:</strong> {{ selectedCar.matricule }}<br>
+      <strong>Marque:</strong> {{ selectedCar.marque }}<br>
+      <strong>Panne:</strong> {{ selectedCar.panne }}<br>
+      <strong>Location:</strong> {{ selectedCar.location }}
+    </div>
+  </map-info-window>
+
 </google-map>
