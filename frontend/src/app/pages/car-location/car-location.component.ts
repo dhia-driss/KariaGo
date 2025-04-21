@@ -49,16 +49,20 @@ export class CarLocationComponent implements OnInit {
   }
 
   selectCar(marker: any, infoWindow: MapInfoWindow): void {
+    // 🚫 Don't open popup if car is inactive
+    if (!marker.car.car_work) {
+      this.selectedCar = null;
+      return;
+    }
+
     this.selectedPosition = marker.position;
-    // Step 1: Get all bookings for this car
+
     this.http.get<any[]>(`${environment.apiBaseUrl}/bookings/car/${marker.car._id}`).subscribe(bookings => {
       if (bookings.length > 0) {
-        // Step 2: Find the latest booking by date
         const latestBooking = bookings.sort((a, b) =>
           new Date(b.date_hour_booking).getTime() - new Date(a.date_hour_booking).getTime()
         )[0];
 
-        // Step 3: Get the user fullName
         this.http.get<any>(`${environment.apiBaseUrl}/users/${latestBooking.id_user}`).subscribe(user => {
           this.selectedCar = {
             ...marker.car,
@@ -67,20 +71,14 @@ export class CarLocationComponent implements OnInit {
             date_hour_expire: latestBooking.date_hour_expire
           };
           infoWindow.open();
-        }, () => {
-          // User not found
-          this.selectedCar = { ...marker.car };
-          infoWindow.open();
         });
       } else {
-        // No booking for this car
         this.selectedCar = { ...marker.car };
-        infoWindow.open();
+        infoWindow.open(); // Optional: you can skip opening here if no booking
       }
     }, () => {
-      // Error fetching bookings
       this.selectedCar = { ...marker.car };
-      infoWindow.open();
+      infoWindow.open(); // Optional
     });
   }
 }

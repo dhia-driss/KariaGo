@@ -123,8 +123,10 @@
             </span>
           </td>
           <td><span class="location-icon">📍</span> {{ car.location }}</td>
-          <td>{{ car.diagnostique_vidange.vidange3 || 'N/A' }}</td>
-          <td><button class="view-btn" (click)="selectCar(car)">👁 View</button></td>
+          <td>{{ car.diagnostique_vidange.vidange3 ? (car.diagnostique_vidange.vidange3 | date:'yyyy-MM-dd') : 'N/A' }}</td>
+          <td>          <button class="view-btn" (click)="selectCar(car)">👁 View</button>
+          </td>
+
         </tr>
       </tbody>
     </table>
@@ -145,15 +147,16 @@
         <p><strong>Panne:</strong> {{ selectedCar.panne }}</p>
         <p><strong>AI-Detected Issues:</strong> {{ selectedCar.panne_ia?.join(', ') || 'N/A' }}</p>
         <p><strong>Location:</strong> {{ selectedCar.location }}</p>
-        <p><strong>Technical Inspection:</strong> {{ selectedCar.visite_technique | date:'medium' }}</p>
-        <p><strong>Insurance:</strong> {{ selectedCar.date_assurance | date:'medium' }}</p>
-        <p><strong>Vignette:</strong> {{ selectedCar.vignette | date:'medium' }}</p>
+        <p><strong>Technical Inspection:</strong> {{ selectedCar.visite_technique | date:'yyyy-MM-dd' }}</p>
+        <p><strong>Insurance:</strong> {{ selectedCar.date_assurance | date:'yyyy-MM-dd' }}</p>
+        <p><strong>Vignette:</strong> {{ selectedCar.vignette | date:'yyyy-MM-dd' }}</p>
         <p><strong>Status:</strong> {{ selectedCar.car_work ? '✅ Running' : '❌ Not Working' }}</p>
-        <p><strong>First Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange1 ? (selectedCar.diagnostique_vidange.vidange1 | date:'medium') : 'N/A' }}</p>
-        <p><strong>Second Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange2 ? (selectedCar.diagnostique_vidange.vidange2 | date:'medium') : 'N/A' }}</p>
-        <p><strong>Third Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange3 ? (selectedCar.diagnostique_vidange.vidange3 | date:'medium') : 'N/A' }}</p>
-        <button class="modify-btn" (click)="toggleEditMode()">✏ Modify</button>
-        <button class="delete-btn" (click)="removeCar()">🗑 Delete</button>
+        <p><strong>First Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange1 ? (selectedCar.diagnostique_vidange.vidange1 | date:'yyyy-MM-dd') : 'N/A' }}</p>
+        <p><strong>Second Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange2 ? (selectedCar.diagnostique_vidange.vidange2 | date:'yyyy-MM-dd') : 'N/A' }}</p>
+        <p><strong>Third Oil Change:</strong> {{ selectedCar.diagnostique_vidange.vidange3 ? (selectedCar.diagnostique_vidange.vidange3 | date:'yyyy-MM-dd') : 'N/A' }}</p>
+        <button class="action-btn modify-btn" (click)="toggleEditMode()">✏ Modify</button>
+        <button class="action-btn delete-btn" (click)="removeCar()">🗑 Delete</button>
+        
       </div>
 
       <!-- Edit Mode -->

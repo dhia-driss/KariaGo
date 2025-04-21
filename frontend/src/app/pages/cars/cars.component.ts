@@ -146,12 +146,20 @@ export class CarsComponent implements OnInit {
     this.isEditing = !this.isEditing;
   }
 
-  // 🔹 Toggle Add Car Mode
-  toggleAddCar(): void {
-    this.isAdding = !this.isAdding;
-    this.isEditing = false;
-    this.selectedCar = null;
+ // 🔹 Toggle Add Car Mode
+toggleAddCar(): void {
+  this.isAdding = !this.isAdding;
+  this.isEditing = false;
+  this.selectedCar = null;
+
+  // Prevent background scroll when Add Car Widget is open
+  if (this.isAdding) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'auto';
   }
+}
+
 
   // 🔹 Save Updated Car Information
   saveCarChanges(): void {
