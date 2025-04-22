@@ -1303,4 +1303,43 @@
     }
   }
   
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .view-btn,
+  .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+  
+  .view-btn {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .view-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .delete-btn {
+    background-color: #ef4444;
+    color: #fff;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c53030;
+  }
   

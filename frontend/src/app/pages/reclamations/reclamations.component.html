@@ -49,9 +49,12 @@
               <td>{{ reclamation.message }}</td>
               <td>{{ reclamation.date_created | date:'medium' }}</td>
               <td>
-                <button class="view-btn" (click)="viewReclamation(reclamation)">👁️ View</button>
-                <button class="delete-btn" (click)="deleteReclamation(reclamation._id)">🗑️ Delete</button>
+                <div class="action-buttons">
+                  <button class="view-btn" (click)="viewReclamation(reclamation)">👁️ View</button>
+                  <button class="delete-btn" (click)="deleteReclamation(reclamation._id)">🗑️ Delete</button>
+                </div>
               </td>
+              
             </tr>
           </tbody>
         </table>

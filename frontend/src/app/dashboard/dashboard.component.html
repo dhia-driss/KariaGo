@@ -2,11 +2,18 @@
   <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-header">
-      <div class="logo">
-        <img src="assets/logo1.png" alt="KariaGo Logo" class="logo-icon" />        <span class="logo-text">KariaGo Admin</span>
-      </div>
+      <a routerLink="/admin/dashboard" class="logo-link">
+        <img src="assets/logo1.png" alt="KariaGo Logo" class="logo-icon" />
+        <span class="logo-text">
+          <span>
+            <span style="color:#1f2937">Karia</span><span style="color:#007bff">Go</span>
+          </span><br>
+          <span class="admin-text">Admin</span>
+        </span>
+        
+      </a>
     </div>
-
+    
     <div class="sidebar-content">
       <ul class="menu">
         <li class="menu-item">
@@ -19,7 +26,6 @@
           <a routerLink="/admin/cars">
             <i class="fas fa-car-side"></i>
             <span>Cars</span>
-          
           </a>
         </li>
         <li class="menu-item">
@@ -58,7 +64,65 @@
 
     <ng-container *ngIf="isDefaultView; else dynamicContent">
       <div class="stats-container">
-        <!-- Stats Cards Go Here -->
+        <div class="stats-card blue">
+          <div class="stats-info">
+            <p class="stats-title">Total Users</p>
+            <p class="stats-value">{{ totalUsers }}</p>
+          </div>
+          <div class="stats-icon">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+
+        <div class="stats-card green">
+          <div class="stats-info">
+            <p class="stats-title">Total Cars</p>
+            <p class="stats-value">{{ totalCars }}</p>
+          </div>
+          <div class="stats-icon">
+            <i class="fas fa-car"></i>
+          </div>
+        </div>
+
+        <div class="stats-card amber">
+          <div class="stats-info">
+            <p class="stats-title">Active Bookings</p>
+            <p class="stats-value">{{ activeBookings }}</p>
+          </div>
+          <div class="stats-icon">
+            <i class="fas fa-calendar"></i>
+          </div>
+        </div>
+
+        <div class="stats-card red">
+          <div class="stats-info">
+            <p class="stats-title">Open Reclamations</p>
+            <p class="stats-value">{{ openReclamations }}</p>
+          </div>
+          <div class="stats-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-cards">
+        <div class="content-card">
+          <div class="card-header">
+            <h2>Recent Activity</h2>
+          </div>
+          <div class="card-content">
+            <div class="placeholder"></div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="card-header">
+            <h2>Performance</h2>
+          </div>
+          <div class="card-content">
+            <div class="placeholder"></div>
+          </div>
+        </div>
       </div>
     </ng-container>
 
@@ -67,3 +131,10 @@
     </ng-template>
   </main>
 </div>
+
+<script>
+  // Toggle sidebar on mobile
+  document.getElementById('sidebarToggle')?.addEventListener('click', function () {
+    document.querySelector('.dashboard-container')?.classList.toggle('sidebar-collapsed');
+  });
+</script>

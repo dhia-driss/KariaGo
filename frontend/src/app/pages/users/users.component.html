@@ -114,17 +114,17 @@
         Password must be at least 6 characters.
       </div>
 
-      <!-- Blacklist -->
-      <label>Blacklisted:</label>
-      <select
-        class="widget-input"
-        [(ngModel)]="newUser.blacklist"
-        name="blacklist"
-      >
-        <option [ngValue]="true">Yes</option>
-        <option [ngValue]="false">No</option>
-      </select>
-
+      <label for="blacklistToggle">Blacklisted:</label>
+      <label class="toggle-switch">
+        <input
+          type="checkbox"
+          id="blacklistToggle"
+          [(ngModel)]="newUser.blacklist"
+          name="blacklist"
+        />
+        <span class="slider round"></span>
+      </label>
+      
       <!-- Save Button -->
       <button
         class="save-btn"
@@ -222,11 +222,17 @@
         <label>Email:</label>
         <input class="widget-input" [(ngModel)]="selectedUser.email" name="email" type="email" required />
 
-        <label>Blacklisted:</label>
-        <select class="widget-input" [(ngModel)]="selectedUser.blacklist" name="blacklist">
-          <option [ngValue]="true">Yes</option>
-          <option [ngValue]="false">No</option>
-        </select>
+       <label for="editBlacklistToggle">Blacklisted:</label>
+<label class="toggle-switch">
+  <input
+    type="checkbox"
+    id="editBlacklistToggle"
+    [(ngModel)]="selectedUser.blacklist"
+    name="blacklist"
+  />
+  <span class="slider round"></span>
+</label>
+
 
         <button class="save-btn" type="submit" [disabled]="isLoadingAction">
           <span *ngIf="!isLoadingAction">💾 Save Changes</span>
